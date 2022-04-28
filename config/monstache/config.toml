@@ -1,0 +1,60 @@
+# connection settings
+#启用调试日志，这项要放在最上面，否则日志打印不到文件（坑了我几个小时）
+verbose = true
+
+
+# connect to MongoDB using the following URL
+mongo-url = "mongodb://localhost:27017"
+# connect to the Elasticsearch REST API at the following node URLs
+elasticsearch-urls = ["http://localhost:9200"]
+
+elasticsearch-user = "elastic"
+elasticsearch-password = "000000"
+
+#monstache最多开几个线程同步到es,默认为4
+elasticsearch-max-conns = 4
+
+#mongodb删除集合或库时是否同步删除es中的索引
+dropped-collections = false
+dropped-databases = false
+
+enable-oplog = true
+
+# frequently required settings
+# 记录同步位点，便于下次从该位置同步
+resume = true
+# 指定恢复策略。仅当resume为true时生效，默认为0-基于时间戳的变更流恢复
+resume-strategy = 0
+
+# if you need to seed an index from a collection and not just listen and sync changes events
+# you can copy entire collections or views from MongoDB to Elasticsearch
+direct-read-namespaces = ["IR.citationsView"] # read direct from the view of the collection to seed index
+
+# change-stream-namespaces = ["IR.citations"] # change events happen on the underlying collections not views
+
+#生产环境记录日志必不可少，monstache默认是输出到标准输出的，这里指定它输出到指定的日志文件（这个也是踩坑踩出来的哦！）
+[logs]
+info = "/home/solid/monstache/logs/monstore-center/info.log"
+warn = "/home/solid/monstache/logs/monstore-center/warn.log"
+error = "/home/solid/monstache/logs/monstore-center/error.log"
+trace = "/home/solid/monstache/logs/monstore-center/trace.log"
+
+#设置日志切割参数，下面的配置意思是：每个日志文件超过500M会被切割，最大保存最近60个日志文件，会压缩历史日志
+[log-rotate]
+max-size = 500
+max-age = 60
+compress = true
+
+
+#[[mapping]]
+#namespace = "IR.citations" # map change events on the thing collection to the things index
+#index = "citations"
+
+[[mapping]]
+namespace = "IR.citationsView" # map direct reads of the thingview to the same things index
+index = "citations"
+
+[[relate]]
+namespace = "IR.citations" # when a thing changes look it up in the assoicated view by _id and index that
+with-namespace = "IR.citationsView"
+keep-src = false  # ignore the original thing that changed and instead just use the lookup of that thing via the view
