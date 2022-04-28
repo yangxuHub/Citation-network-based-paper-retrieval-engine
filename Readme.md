@@ -1,10 +1,10 @@
-# team8-Citation network-based paper retrieval engine
+# Citation network-based paper retrieval engine
 
 
 
 ## 项目说明
 
-### Project3:  基于引文网络的论文检索引擎
+### Project:  基于引文网络的论文检索引擎
 
 引文网络是由文献间引用和被引用的关系构成的集合。该网络中的节点是文献，边代表了文献间的引用关系。
 
